@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/binary"
+	"errors"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -34,8 +35,33 @@ func (k Keeper) SetBidCount(ctx sdk.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-func (k Keeper) AppendBid(ctx sdk.Context, bid types.Bid) uint64 {
-	count := k.GetAuctionCount(ctx)
+func (k Keeper) AppendBid(ctx sdk.Context, bid types.Bid) (uint64, error) {
+
+	auctionStore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.AuctionKey))
+
+	byteAuctionId := make([]byte, 8)
+	binary.BigEndian.PutUint64(byteAuctionId, bid.AuctionId)
+
+	targetAuctionByte := auctionStore.Get(byteAuctionId)
+	var targetAuction types.Auction
+
+	if err := k.cdc.Unmarshal(targetAuctionByte, &targetAuction); err != nil {
+		return 0, err
+	}
+
+	if targetAuction.Ended {
+		return 0, errors.New("target auction already eneded")
+	}
+
+	if targetAuction.StartPrice > bid.BidPrice {
+		return 0, errors.New("bid price is lower than target auction start price")
+	}
+
+	if bid.BidPrice-targetAuction.StartPrice < targetAuction.MinStepPrice {
+		return 0, errors.New("bid price increment is lower than target auction min step price")
+	}
+
+	count := k.GetBidCount(ctx)
 
 	bid.Id = count
 
@@ -49,5 +75,5 @@ func (k Keeper) AppendBid(ctx sdk.Context, bid types.Bid) uint64 {
 	store.Set(byteKey, appendedValue)
 
 	k.SetBidCount(ctx, count+1)
-	return count
+	return count, nil
 }

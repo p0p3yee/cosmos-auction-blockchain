@@ -16,7 +16,9 @@ func (k msgServer) PlaceBid(goCtx context.Context, msg *types.MsgPlaceBid) (*typ
 		BidPrice:  msg.BidPrice,
 	}
 
-	id := k.AppendBid(ctx, bid)
-
-	return &types.MsgPlaceBidResponse{Id: id}, nil
+	if id, err := k.AppendBid(ctx, bid); err != nil {
+		return nil, err
+	} else {
+		return &types.MsgPlaceBidResponse{Id: id}, nil
+	}
 }
