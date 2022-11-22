@@ -44727,6 +44727,10 @@ definitions:
         format: uint64
   auction.auction.MsgPlaceBidResponse:
     type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   auction.auction.Params:
     type: object
     description: Params defines the parameters for the module.

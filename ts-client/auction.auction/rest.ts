@@ -14,7 +14,10 @@ export interface AuctionMsgCreateAuctionResponse {
   id?: string;
 }
 
-export type AuctionMsgPlaceBidResponse = object;
+export interface AuctionMsgPlaceBidResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
 /**
  * Params defines the parameters for the module.
@@ -161,7 +164,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title auction/auction/genesis.proto
+ * @title auction/auction/auction.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

@@ -1,9 +1,11 @@
 import { Client, registry, MissingWalletError } from 'auction-client-ts'
 
+import { Auction } from "auction-client-ts/auction.auction/types"
+import { Bid } from "auction-client-ts/auction.auction/types"
 import { Params } from "auction-client-ts/auction.auction/types"
 
 
-export { Params };
+export { Auction, Bid, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -37,6 +39,8 @@ const getDefaultState = () => {
 				Params: {},
 				
 				_Structure: {
+						Auction: getStructure(Auction.fromPartial({})),
+						Bid: getStructure(Bid.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},

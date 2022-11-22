@@ -10,8 +10,13 @@ import (
 func (k msgServer) CreateAuction(goCtx context.Context, msg *types.MsgCreateAuction) (*types.MsgCreateAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	auction := types.Auction{
+		Creator:      msg.Creator,
+		StartPrice:   msg.StartPrice,
+		MinStepPrice: msg.MinPriceStep,
+	}
 
-	return &types.MsgCreateAuctionResponse{}, nil
+	id := k.AppendAuction(ctx, auction)
+
+	return &types.MsgCreateAuctionResponse{Id: id}, nil
 }

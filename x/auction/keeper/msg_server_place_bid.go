@@ -10,8 +10,13 @@ import (
 func (k msgServer) PlaceBid(goCtx context.Context, msg *types.MsgPlaceBid) (*types.MsgPlaceBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	bid := types.Bid{
+		Creator:   msg.Creator,
+		AuctionId: msg.AuctionId,
+		BidPrice:  msg.BidPrice,
+	}
 
-	return &types.MsgPlaceBidResponse{}, nil
+	id := k.AppendBid(ctx, bid)
+
+	return &types.MsgPlaceBidResponse{Id: id}, nil
 }
