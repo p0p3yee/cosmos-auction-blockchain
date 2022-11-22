@@ -5,6 +5,8 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "auction/auction/params.proto";
+import "auction/auction/auction.proto";
+
 // this line is used by starport scaffolding # 1
 
 option go_package = "auction/x/auction/types";
@@ -33,13 +35,12 @@ message QueryParamsResponse {
 }
 
 message QueryAuctionsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryAuctionsResponse {
-  string name = 1;
-  uint64 startPrice = 2;
-  uint64 minPriceStep = 3;
-  bool ended = 4;
+  repeated Auction Auction = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3
