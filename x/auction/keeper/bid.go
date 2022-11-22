@@ -50,7 +50,7 @@ func (k Keeper) AppendBid(ctx sdk.Context, bid types.Bid) (uint64, error) {
 	}
 
 	if targetAuction.Ended {
-		return 0, errors.New("target auction already eneded")
+		return 0, errors.New("target auction already ended")
 	}
 
 	if targetAuction.StartPrice > bid.BidPrice {
