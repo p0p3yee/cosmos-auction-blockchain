@@ -24,6 +24,17 @@ export interface AuctionMsgPlaceBidResponse {
  */
 export type AuctionParams = object;
 
+export interface AuctionQueryAuctionsResponse {
+  name?: string;
+
+  /** @format uint64 */
+  startPrice?: string;
+
+  /** @format uint64 */
+  minPriceStep?: string;
+  ended?: boolean;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -168,6 +179,22 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryAuctions
+   * @summary Queries a list of Auctions items.
+   * @request GET:/auction/auction/auctions
+   */
+  queryAuctions = (params: RequestParams = {}) =>
+    this.request<AuctionQueryAuctionsResponse, RpcStatus>({
+      path: `/auction/auction/auctions`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

@@ -4,6 +4,46 @@ info:
   name: ''
   description: ''
 paths:
+  /auction/auction/auctions:
+    get:
+      summary: Queries a list of Auctions items.
+      operationId: AuctionAuctionAuctions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              startPrice:
+                type: string
+                format: uint64
+              minPriceStep:
+                type: string
+                format: uint64
+              ended:
+                type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /auction/auction/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -44734,6 +44774,19 @@ definitions:
   auction.auction.Params:
     type: object
     description: Params defines the parameters for the module.
+  auction.auction.QueryAuctionsResponse:
+    type: object
+    properties:
+      name:
+        type: string
+      startPrice:
+        type: string
+        format: uint64
+      minPriceStep:
+        type: string
+        format: uint64
+      ended:
+        type: boolean
   auction.auction.QueryParamsResponse:
     type: object
     properties:

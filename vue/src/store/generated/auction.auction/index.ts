@@ -37,6 +37,7 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				Auctions: {},
 				
 				_Structure: {
 						Auction: getStructure(Auction.fromPartial({})),
@@ -75,6 +76,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getAuctions: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Auctions[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -132,19 +139,28 @@ export default {
 		},
 		
 		
-		async sendMsgPlaceBid({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		 		
+		
+		
+		async QueryAuctions({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
-				const client=await initClient(rootGetters)
-				const result = await client.AuctionAuction.tx.sendMsgPlaceBid({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.AuctionAuction.query.queryAuctions()).data
+				
+					
+				commit('QUERY', { query: 'Auctions', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAuctions', payload: { options: { all }, params: {...key},query }})
+				return getters['getAuctions']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgPlaceBid:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgPlaceBid:Send Could not broadcast Tx: '+ e.message)
-				}
+				throw new Error('QueryClient:QueryAuctions API Node Unavailable. Could not perform query: ' + e.message)
+				
 			}
 		},
+		
+		
 		async sendMsgCreateAuction({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -158,20 +174,20 @@ export default {
 				}
 			}
 		},
-		
-		async MsgPlaceBid({ rootGetters }, { value }) {
+		async sendMsgPlaceBid({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
-				const client=initClient(rootGetters)
-				const msg = await client.AuctionAuction.tx.msgPlaceBid({value})
-				return msg
+				const client=await initClient(rootGetters)
+				const result = await client.AuctionAuction.tx.sendMsgPlaceBid({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgPlaceBid:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgPlaceBid:Create Could not create message: ' + e.message)
+				}else{
+					throw new Error('TxClient:MsgPlaceBid:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		
 		async MsgCreateAuction({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -182,6 +198,19 @@ export default {
 					throw new Error('TxClient:MsgCreateAuction:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgCreateAuction:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgPlaceBid({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.AuctionAuction.tx.msgPlaceBid({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgPlaceBid:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgPlaceBid:Create Could not create message: ' + e.message)
 				}
 			}
 		},
