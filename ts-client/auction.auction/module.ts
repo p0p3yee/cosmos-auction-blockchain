@@ -8,9 +8,10 @@ import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgCreateAuction } from "./types/auction/auction/tx";
+import { MsgPlaceBid } from "./types/auction/auction/tx";
 
 
-export { MsgCreateAuction };
+export { MsgCreateAuction, MsgPlaceBid };
 
 type sendMsgCreateAuctionParams = {
   value: MsgCreateAuction,
@@ -18,9 +19,19 @@ type sendMsgCreateAuctionParams = {
   memo?: string
 };
 
+type sendMsgPlaceBidParams = {
+  value: MsgPlaceBid,
+  fee?: StdFee,
+  memo?: string
+};
+
 
 type msgCreateAuctionParams = {
   value: MsgCreateAuction,
+};
+
+type msgPlaceBidParams = {
+  value: MsgPlaceBid,
 };
 
 
@@ -55,12 +66,34 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		async sendMsgPlaceBid({ value, fee, memo }: sendMsgPlaceBidParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgPlaceBid: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgPlaceBid({ value: MsgPlaceBid.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgPlaceBid: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		
 		msgCreateAuction({ value }: msgCreateAuctionParams): EncodeObject {
 			try {
 				return { typeUrl: "/auction.auction.MsgCreateAuction", value: MsgCreateAuction.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgCreateAuction: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgPlaceBid({ value }: msgPlaceBidParams): EncodeObject {
+			try {
+				return { typeUrl: "/auction.auction.MsgPlaceBid", value: MsgPlaceBid.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgPlaceBid: Could not create message: ' + e.message)
 			}
 		},
 		

@@ -8,6 +8,7 @@ option go_package = "auction/x/auction/types";
 // Msg defines the Msg service.
 service Msg {
       rpc CreateAuction(MsgCreateAuction) returns (MsgCreateAuctionResponse);
+  rpc PlaceBid(MsgPlaceBid) returns (MsgPlaceBidResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -19,6 +20,16 @@ message MsgCreateAuction {
 }
 
 message MsgCreateAuctionResponse {
+  uint64 id = 1;
+}
+
+message MsgPlaceBid {
+  string creator = 1;
+  uint64 auctionId = 2;
+  uint64 bidPrice = 3;
+}
+
+message MsgPlaceBidResponse {
   uint64 id = 1;
 }
 

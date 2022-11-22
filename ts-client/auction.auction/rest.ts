@@ -9,7 +9,12 @@
  * ---------------------------------------------------------------
  */
 
-export type AuctionMsgCreateAuctionResponse = object;
+export interface AuctionMsgCreateAuctionResponse {
+  /** @format uint64 */
+  id?: string;
+}
+
+export type AuctionMsgPlaceBidResponse = object;
 
 /**
  * Params defines the parameters for the module.
