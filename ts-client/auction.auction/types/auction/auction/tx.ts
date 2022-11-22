@@ -25,6 +25,15 @@ export interface MsgPlaceBidResponse {
   id: number;
 }
 
+export interface MsgFinalizeAuction {
+  creator: string;
+  auctionId: number;
+  bidId: number;
+}
+
+export interface MsgFinalizeAuctionResponse {
+}
+
 function createBaseMsgCreateAuction(): MsgCreateAuction {
   return { creator: "", name: "", startPrice: 0, minPriceStep: 0 };
 }
@@ -262,11 +271,118 @@ export const MsgPlaceBidResponse = {
   },
 };
 
+function createBaseMsgFinalizeAuction(): MsgFinalizeAuction {
+  return { creator: "", auctionId: 0, bidId: 0 };
+}
+
+export const MsgFinalizeAuction = {
+  encode(message: MsgFinalizeAuction, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.auctionId !== 0) {
+      writer.uint32(16).uint64(message.auctionId);
+    }
+    if (message.bidId !== 0) {
+      writer.uint32(24).uint64(message.bidId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgFinalizeAuction {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgFinalizeAuction();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.auctionId = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.bidId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgFinalizeAuction {
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      auctionId: isSet(object.auctionId) ? Number(object.auctionId) : 0,
+      bidId: isSet(object.bidId) ? Number(object.bidId) : 0,
+    };
+  },
+
+  toJSON(message: MsgFinalizeAuction): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.auctionId !== undefined && (obj.auctionId = Math.round(message.auctionId));
+    message.bidId !== undefined && (obj.bidId = Math.round(message.bidId));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgFinalizeAuction>, I>>(object: I): MsgFinalizeAuction {
+    const message = createBaseMsgFinalizeAuction();
+    message.creator = object.creator ?? "";
+    message.auctionId = object.auctionId ?? 0;
+    message.bidId = object.bidId ?? 0;
+    return message;
+  },
+};
+
+function createBaseMsgFinalizeAuctionResponse(): MsgFinalizeAuctionResponse {
+  return {};
+}
+
+export const MsgFinalizeAuctionResponse = {
+  encode(_: MsgFinalizeAuctionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgFinalizeAuctionResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgFinalizeAuctionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgFinalizeAuctionResponse {
+    return {};
+  },
+
+  toJSON(_: MsgFinalizeAuctionResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgFinalizeAuctionResponse>, I>>(_: I): MsgFinalizeAuctionResponse {
+    const message = createBaseMsgFinalizeAuctionResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateAuction(request: MsgCreateAuction): Promise<MsgCreateAuctionResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   PlaceBid(request: MsgPlaceBid): Promise<MsgPlaceBidResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  FinalizeAuction(request: MsgFinalizeAuction): Promise<MsgFinalizeAuctionResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -275,6 +391,7 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.CreateAuction = this.CreateAuction.bind(this);
     this.PlaceBid = this.PlaceBid.bind(this);
+    this.FinalizeAuction = this.FinalizeAuction.bind(this);
   }
   CreateAuction(request: MsgCreateAuction): Promise<MsgCreateAuctionResponse> {
     const data = MsgCreateAuction.encode(request).finish();
@@ -286,6 +403,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgPlaceBid.encode(request).finish();
     const promise = this.rpc.request("auction.auction.Msg", "PlaceBid", data);
     return promise.then((data) => MsgPlaceBidResponse.decode(new _m0.Reader(data)));
+  }
+
+  FinalizeAuction(request: MsgFinalizeAuction): Promise<MsgFinalizeAuctionResponse> {
+    const data = MsgFinalizeAuction.encode(request).finish();
+    const promise = this.rpc.request("auction.auction.Msg", "FinalizeAuction", data);
+    return promise.then((data) => MsgFinalizeAuctionResponse.decode(new _m0.Reader(data)));
   }
 }
 

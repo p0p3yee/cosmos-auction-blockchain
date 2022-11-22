@@ -9,9 +9,10 @@ import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgCreateAuction } from "./types/auction/auction/tx";
 import { MsgPlaceBid } from "./types/auction/auction/tx";
+import { MsgFinalizeAuction } from "./types/auction/auction/tx";
 
 
-export { MsgCreateAuction, MsgPlaceBid };
+export { MsgCreateAuction, MsgPlaceBid, MsgFinalizeAuction };
 
 type sendMsgCreateAuctionParams = {
   value: MsgCreateAuction,
@@ -25,6 +26,12 @@ type sendMsgPlaceBidParams = {
   memo?: string
 };
 
+type sendMsgFinalizeAuctionParams = {
+  value: MsgFinalizeAuction,
+  fee?: StdFee,
+  memo?: string
+};
+
 
 type msgCreateAuctionParams = {
   value: MsgCreateAuction,
@@ -32,6 +39,10 @@ type msgCreateAuctionParams = {
 
 type msgPlaceBidParams = {
   value: MsgPlaceBid,
+};
+
+type msgFinalizeAuctionParams = {
+  value: MsgFinalizeAuction,
 };
 
 
@@ -80,6 +91,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		async sendMsgFinalizeAuction({ value, fee, memo }: sendMsgFinalizeAuctionParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgFinalizeAuction: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgFinalizeAuction({ value: MsgFinalizeAuction.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgFinalizeAuction: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		
 		msgCreateAuction({ value }: msgCreateAuctionParams): EncodeObject {
 			try {
@@ -94,6 +119,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/auction.auction.MsgPlaceBid", value: MsgPlaceBid.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgPlaceBid: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgFinalizeAuction({ value }: msgFinalizeAuctionParams): EncodeObject {
+			try {
+				return { typeUrl: "/auction.auction.MsgFinalizeAuction", value: MsgFinalizeAuction.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgFinalizeAuction: Could not create message: ' + e.message)
 			}
 		},
 		

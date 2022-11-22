@@ -32,6 +32,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdCreateAuction())
 	cmd.AddCommand(CmdPlaceBid())
+	cmd.AddCommand(CmdFinalizeAuction())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

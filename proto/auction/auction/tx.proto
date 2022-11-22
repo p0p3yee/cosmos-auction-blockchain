@@ -9,6 +9,7 @@ option go_package = "auction/x/auction/types";
 service Msg {
       rpc CreateAuction(MsgCreateAuction) returns (MsgCreateAuctionResponse);
   rpc PlaceBid(MsgPlaceBid) returns (MsgPlaceBidResponse);
+  rpc FinalizeAuction(MsgFinalizeAuction) returns (MsgFinalizeAuctionResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -31,6 +32,15 @@ message MsgPlaceBid {
 
 message MsgPlaceBidResponse {
   uint64 id = 1;
+}
+
+message MsgFinalizeAuction {
+  string creator = 1;
+  uint64 auctionId = 2;
+  uint64 bidId = 3;
+}
+
+message MsgFinalizeAuctionResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

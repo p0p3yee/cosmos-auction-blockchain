@@ -44878,6 +44878,8 @@ definitions:
       id:
         type: string
         format: uint64
+  auction.auction.MsgFinalizeAuctionResponse:
+    type: object
   auction.auction.MsgPlaceBidResponse:
     type: object
     properties:
