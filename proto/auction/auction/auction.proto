@@ -10,5 +10,5 @@ message Auction {
   string name = 3;
   uint64 startPrice = 4;
   uint64 minStepPrice = 5;
-  bool ended = 6;
+  bool   ended = 6;
 }
