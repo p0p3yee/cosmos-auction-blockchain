@@ -10,10 +10,11 @@ export interface Auction {
   name: string;
   startPrice: number;
   minStepPrice: number;
+  ended: boolean;
 }
 
 function createBaseAuction(): Auction {
-  return { creator: "", id: 0, name: "", startPrice: 0, minStepPrice: 0 };
+  return { creator: "", id: 0, name: "", startPrice: 0, minStepPrice: 0, ended: false };
 }
 
 export const Auction = {
@@ -32,6 +33,9 @@ export const Auction = {
     }
     if (message.minStepPrice !== 0) {
       writer.uint32(40).uint64(message.minStepPrice);
+    }
+    if (message.ended === true) {
+      writer.uint32(48).bool(message.ended);
     }
     return writer;
   },
@@ -58,6 +62,9 @@ export const Auction = {
         case 5:
           message.minStepPrice = longToNumber(reader.uint64() as Long);
           break;
+        case 6:
+          message.ended = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -73,6 +80,7 @@ export const Auction = {
       name: isSet(object.name) ? String(object.name) : "",
       startPrice: isSet(object.startPrice) ? Number(object.startPrice) : 0,
       minStepPrice: isSet(object.minStepPrice) ? Number(object.minStepPrice) : 0,
+      ended: isSet(object.ended) ? Boolean(object.ended) : false,
     };
   },
 
@@ -83,6 +91,7 @@ export const Auction = {
     message.name !== undefined && (obj.name = message.name);
     message.startPrice !== undefined && (obj.startPrice = Math.round(message.startPrice));
     message.minStepPrice !== undefined && (obj.minStepPrice = Math.round(message.minStepPrice));
+    message.ended !== undefined && (obj.ended = message.ended);
     return obj;
   },
 
@@ -93,6 +102,7 @@ export const Auction = {
     message.name = object.name ?? "";
     message.startPrice = object.startPrice ?? 0;
     message.minStepPrice = object.minStepPrice ?? 0;
+    message.ended = object.ended ?? false;
     return message;
   },
 };
