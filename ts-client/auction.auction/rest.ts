@@ -29,7 +29,13 @@ export interface AuctionMsgCreateAuctionResponse {
   id?: string;
 }
 
-export type AuctionMsgFinalizeAuctionResponse = object;
+export interface AuctionMsgFinalizeAuctionResponse {
+  /** @format uint64 */
+  id?: string;
+
+  /** @format uint64 */
+  finalPrice?: string;
+}
 
 export interface AuctionMsgPlaceBidResponse {
   /** @format uint64 */

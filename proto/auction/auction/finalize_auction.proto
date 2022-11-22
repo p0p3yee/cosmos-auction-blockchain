@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package auction.auction;
+
+option go_package = "auction/x/auction/types";
+
+message FinalizeAuction {
+  string creator = 1;
+  uint64 id = 2;
+  uint64 auctionId = 3;
+  uint64 bidId = 4;
+  uint64 finalPrice = 5;
+}

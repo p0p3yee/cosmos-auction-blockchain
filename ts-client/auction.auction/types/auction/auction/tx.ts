@@ -32,6 +32,8 @@ export interface MsgFinalizeAuction {
 }
 
 export interface MsgFinalizeAuctionResponse {
+  id: number;
+  finalPrice: number;
 }
 
 function createBaseMsgCreateAuction(): MsgCreateAuction {
@@ -339,11 +341,17 @@ export const MsgFinalizeAuction = {
 };
 
 function createBaseMsgFinalizeAuctionResponse(): MsgFinalizeAuctionResponse {
-  return {};
+  return { id: 0, finalPrice: 0 };
 }
 
 export const MsgFinalizeAuctionResponse = {
-  encode(_: MsgFinalizeAuctionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: MsgFinalizeAuctionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
+    }
+    if (message.finalPrice !== 0) {
+      writer.uint32(16).uint64(message.finalPrice);
+    }
     return writer;
   },
 
@@ -354,6 +362,12 @@ export const MsgFinalizeAuctionResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long);
+          break;
+        case 2:
+          message.finalPrice = longToNumber(reader.uint64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -362,17 +376,24 @@ export const MsgFinalizeAuctionResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgFinalizeAuctionResponse {
-    return {};
+  fromJSON(object: any): MsgFinalizeAuctionResponse {
+    return {
+      id: isSet(object.id) ? Number(object.id) : 0,
+      finalPrice: isSet(object.finalPrice) ? Number(object.finalPrice) : 0,
+    };
   },
 
-  toJSON(_: MsgFinalizeAuctionResponse): unknown {
+  toJSON(message: MsgFinalizeAuctionResponse): unknown {
     const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    message.finalPrice !== undefined && (obj.finalPrice = Math.round(message.finalPrice));
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgFinalizeAuctionResponse>, I>>(_: I): MsgFinalizeAuctionResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgFinalizeAuctionResponse>, I>>(object: I): MsgFinalizeAuctionResponse {
     const message = createBaseMsgFinalizeAuctionResponse();
+    message.id = object.id ?? 0;
+    message.finalPrice = object.finalPrice ?? 0;
     return message;
   },
 };
