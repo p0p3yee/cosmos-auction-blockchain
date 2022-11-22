@@ -44719,6 +44719,8 @@ paths:
       tags:
         - Query
 definitions:
+  auction.auction.MsgCreateAuctionResponse:
+    type: object
   auction.auction.Params:
     type: object
     description: Params defines the parameters for the module.
