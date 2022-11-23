@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "auction/auction/params.proto";
 import "auction/auction/auction.proto";
+import "auction/auction/bid.proto";
 import "auction/auction/finalize_auction.proto";
 
 // this line is used by starport scaffolding # 1
@@ -26,6 +27,11 @@ service Query {
 // Queries a list of FinalizedAuctions items.
 	rpc FinalizedAuctions(QueryFinalizedAuctionsRequest) returns (QueryFinalizedAuctionsResponse) {
 		option (google.api.http).get = "/auction/auction/finalized_auctions";
+	}
+
+// Queries a list of Bids items.
+	rpc Bids(QueryBidsRequest) returns (QueryBidsResponse) {
+		option (google.api.http).get = "/auction/auction/bids";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -55,6 +61,15 @@ message QueryFinalizedAuctionsRequest {
 
 message QueryFinalizedAuctionsResponse {
   repeated FinalizeAuction FinalizedAuction = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryBidsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryBidsResponse {
+  repeated Bid Bid = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

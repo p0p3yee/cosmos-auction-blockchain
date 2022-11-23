@@ -40,6 +40,7 @@ const getDefaultState = () => {
 				Params: {},
 				Auctions: {},
 				FinalizedAuctions: {},
+				Bids: {},
 				
 				_Structure: {
 						Auction: getStructure(Auction.fromPartial({})),
@@ -91,6 +92,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.FinalizedAuctions[JSON.stringify(params)] ?? {}
+		},
+				getBids: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Bids[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -195,6 +202,32 @@ export default {
 				return getters['getFinalizedAuctions']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryFinalizedAuctions API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryBids({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.AuctionAuction.query.queryBids(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.AuctionAuction.query.queryBids({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'Bids', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryBids', payload: { options: { all }, params: {...key},query }})
+				return getters['getBids']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryBids API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
