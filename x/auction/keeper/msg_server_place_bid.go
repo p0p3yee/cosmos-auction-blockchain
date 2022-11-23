@@ -18,12 +18,15 @@ func (k msgServer) PlaceBid(goCtx context.Context, msg *types.MsgPlaceBid) (*typ
 		return nil, types.AuctionEnded
 	}
 
-	if auction.StartPrice > msg.BidPrice {
-		return nil, types.BidPriceTooLow
+	if uint64(auction.CreatedAt)+auction.Duration <= uint64(ctx.BlockHeight()) {
+		if err := k.EndAuction(ctx, auction.Id); err != nil {
+			return nil, err
+		}
+		return nil, types.AuctionEnded
 	}
 
-	if msg.BidPrice-auction.StartPrice < auction.MinStepPrice {
-		return nil, types.BidPriceStepTooLow
+	if auction.StartPrice > msg.BidPrice {
+		return nil, types.BidPriceTooLow
 	}
 
 	bid := types.Bid{

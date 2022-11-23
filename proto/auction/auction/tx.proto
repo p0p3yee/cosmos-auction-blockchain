@@ -17,7 +17,7 @@ message MsgCreateAuction {
   string creator = 1;
   string name = 2;
   uint64 startPrice = 3;
-  uint64 minPriceStep = 4;
+  uint64 duration = 4;
 }
 
 message MsgCreateAuctionResponse {

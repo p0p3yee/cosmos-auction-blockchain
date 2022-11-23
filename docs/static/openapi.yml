@@ -29,9 +29,12 @@ paths:
                     startPrice:
                       type: string
                       format: uint64
-                    minStepPrice:
+                    duration:
                       type: string
                       format: uint64
+                    createdAt:
+                      type: string
+                      format: int64
                     ended:
                       type: boolean
               pagination:
@@ -44867,9 +44870,12 @@ definitions:
       startPrice:
         type: string
         format: uint64
-      minStepPrice:
+      duration:
         type: string
         format: uint64
+      createdAt:
+        type: string
+        format: int64
       ended:
         type: boolean
   auction.auction.MsgCreateAuctionResponse:
@@ -44914,9 +44920,12 @@ definitions:
             startPrice:
               type: string
               format: uint64
-            minStepPrice:
+            duration:
               type: string
               format: uint64
+            createdAt:
+              type: string
+              format: int64
             ended:
               type: boolean
       pagination:

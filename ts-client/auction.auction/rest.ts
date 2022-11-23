@@ -20,7 +20,10 @@ export interface AuctionAuction {
   startPrice?: string;
 
   /** @format uint64 */
-  minStepPrice?: string;
+  duration?: string;
+
+  /** @format int64 */
+  createdAt?: string;
   ended?: boolean;
 }
 

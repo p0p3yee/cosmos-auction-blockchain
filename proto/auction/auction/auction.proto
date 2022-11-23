@@ -5,10 +5,11 @@ package auction.auction;
 option go_package = "auction/x/auction/types";
 
 message Auction {
-  string creator = 1;
-  uint64 id = 2;
-  string name = 3;
-  uint64 startPrice = 4;
-  uint64 minStepPrice = 5;
-  bool   ended = 6;
+  string  creator = 1;
+  uint64  id = 2;
+  string  name = 3;
+  uint64  startPrice = 4;
+  uint64  duration = 5;
+  int64   createdAt = 6;
+  bool    ended = 7;
 }
