@@ -13,6 +13,45 @@ ignite chain serve
 
 Your blockchain in development can be configured with `config.yml`. To learn more, see the [Ignite CLI docs](https://docs.ignite.com).
 
+### Send Transaction
+
+#### Create auction
+
+```
+auctiond tx auction create-auction "auction_name" start_price duration --from account_name
+
+// Create an auction from alice with name: exampleAuction
+// Starting bid is 100token
+// Duration is 100 blocks
+auctiond tx auction create-auction "exampleAuction" 100token 100 --from alice
+```
+
+#### Finalize Auction
+
+Can only be called by the creator of the auction
+
+```
+auctiond tx auction finalize-auction auction_id --from account_name
+
+// Finalize auction id 1 using alice account
+auctiond tx auction finalize-auction 1 --from alice
+```
+
+### Place Bid
+
+Can only place bid that larger than the previous highest bid
+
+You need sufficient balance in your account to place the bid
+
+token will send to module until someone bid price is higher than you
+
+```
+auctiond tx auction place-bid auction_id bidPrice --from account_name
+
+// Place bid for auction id 0, with bid price: 2000token using alice account
+auctiond tx auction place-bid 0 2000token --from alice
+```
+
 ### Web Frontend
 
 Ignite CLI has scaffolded a Vue.js-based web app in the `vue` directory. Run the following commands to install dependencies and start the app:
