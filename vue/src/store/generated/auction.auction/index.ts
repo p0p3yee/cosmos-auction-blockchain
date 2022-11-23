@@ -39,6 +39,7 @@ const getDefaultState = () => {
 	return {
 				Params: {},
 				Auctions: {},
+				FinalizedAuctions: {},
 				
 				_Structure: {
 						Auction: getStructure(Auction.fromPartial({})),
@@ -84,6 +85,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Auctions[JSON.stringify(params)] ?? {}
+		},
+				getFinalizedAuctions: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.FinalizedAuctions[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -167,6 +174,45 @@ export default {
 		},
 		
 		
+		
+		
+		 		
+		
+		
+		async QueryFinalizedAuctions({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.AuctionAuction.query.queryFinalizedAuctions(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.AuctionAuction.query.queryFinalizedAuctions({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'FinalizedAuctions', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryFinalizedAuctions', payload: { options: { all }, params: {...key},query }})
+				return getters['getFinalizedAuctions']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryFinalizedAuctions API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgCreateAuction({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.AuctionAuction.tx.sendMsgCreateAuction({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateAuction:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCreateAuction:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgPlaceBid({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -193,20 +239,20 @@ export default {
 				}
 			}
 		},
-		async sendMsgCreateAuction({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		async MsgCreateAuction({ rootGetters }, { value }) {
 			try {
-				const client=await initClient(rootGetters)
-				const result = await client.AuctionAuction.tx.sendMsgCreateAuction({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
+				const client=initClient(rootGetters)
+				const msg = await client.AuctionAuction.tx.msgCreateAuction({value})
+				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgCreateAuction:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateAuction:Send Could not broadcast Tx: '+ e.message)
+				} else{
+					throw new Error('TxClient:MsgCreateAuction:Create Could not create message: ' + e.message)
 				}
 			}
 		},
-		
 		async MsgPlaceBid({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -230,19 +276,6 @@ export default {
 					throw new Error('TxClient:MsgFinalizeAuction:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgFinalizeAuction:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgCreateAuction({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.AuctionAuction.tx.msgCreateAuction({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAuction:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreateAuction:Create Could not create message: ' + e.message)
 				}
 			}
 		},

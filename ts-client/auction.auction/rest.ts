@@ -29,6 +29,21 @@ export interface AuctionAuction {
   ended?: boolean;
 }
 
+export interface AuctionFinalizeAuction {
+  creator?: string;
+
+  /** @format uint64 */
+  id?: string;
+
+  /** @format uint64 */
+  auctionId?: string;
+
+  /** @format uint64 */
+  bidId?: string;
+  finalPrice?: string;
+  winner?: string;
+}
+
 export interface AuctionMsgCreateAuctionResponse {
   /** @format uint64 */
   id?: string;
@@ -52,6 +67,21 @@ export type AuctionParams = object;
 
 export interface AuctionQueryAuctionsResponse {
   Auction?: AuctionAuction[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface AuctionQueryFinalizedAuctionsResponse {
+  FinalizedAuction?: AuctionFinalizeAuction[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -301,6 +331,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   ) =>
     this.request<AuctionQueryAuctionsResponse, RpcStatus>({
       path: `/auction/auction/auctions`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryFinalizedAuctions
+   * @summary Queries a list of FinalizedAuctions items.
+   * @request GET:/auction/auction/finalized_auctions
+   */
+  queryFinalizedAuctions = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AuctionQueryFinalizedAuctionsResponse, RpcStatus>({
+      path: `/auction/auction/finalized_auctions`,
       method: "GET",
       query: query,
       format: "json",

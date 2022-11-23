@@ -2,6 +2,7 @@
 import _m0 from "protobufjs/minimal";
 import { PageRequest, PageResponse } from "../../cosmos/base/query/v1beta1/pagination";
 import { Auction } from "./auction";
+import { FinalizeAuction } from "./finalize_auction";
 import { Params } from "./params";
 
 export const protobufPackage = "auction.auction";
@@ -22,6 +23,15 @@ export interface QueryAuctionsRequest {
 
 export interface QueryAuctionsResponse {
   Auction: Auction[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryFinalizedAuctionsRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryFinalizedAuctionsResponse {
+  FinalizedAuction: FinalizeAuction[];
   pagination: PageResponse | undefined;
 }
 
@@ -228,12 +238,135 @@ export const QueryAuctionsResponse = {
   },
 };
 
+function createBaseQueryFinalizedAuctionsRequest(): QueryFinalizedAuctionsRequest {
+  return { pagination: undefined };
+}
+
+export const QueryFinalizedAuctionsRequest = {
+  encode(message: QueryFinalizedAuctionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryFinalizedAuctionsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryFinalizedAuctionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryFinalizedAuctionsRequest {
+    return { pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined };
+  },
+
+  toJSON(message: QueryFinalizedAuctionsRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryFinalizedAuctionsRequest>, I>>(
+    object: I,
+  ): QueryFinalizedAuctionsRequest {
+    const message = createBaseQueryFinalizedAuctionsRequest();
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryFinalizedAuctionsResponse(): QueryFinalizedAuctionsResponse {
+  return { FinalizedAuction: [], pagination: undefined };
+}
+
+export const QueryFinalizedAuctionsResponse = {
+  encode(message: QueryFinalizedAuctionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.FinalizedAuction) {
+      FinalizeAuction.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryFinalizedAuctionsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryFinalizedAuctionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.FinalizedAuction.push(FinalizeAuction.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryFinalizedAuctionsResponse {
+    return {
+      FinalizedAuction: Array.isArray(object?.FinalizedAuction)
+        ? object.FinalizedAuction.map((e: any) => FinalizeAuction.fromJSON(e))
+        : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryFinalizedAuctionsResponse): unknown {
+    const obj: any = {};
+    if (message.FinalizedAuction) {
+      obj.FinalizedAuction = message.FinalizedAuction.map((e) => e ? FinalizeAuction.toJSON(e) : undefined);
+    } else {
+      obj.FinalizedAuction = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryFinalizedAuctionsResponse>, I>>(
+    object: I,
+  ): QueryFinalizedAuctionsResponse {
+    const message = createBaseQueryFinalizedAuctionsResponse();
+    message.FinalizedAuction = object.FinalizedAuction?.map((e) => FinalizeAuction.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** Queries a list of Auctions items. */
   Auctions(request: QueryAuctionsRequest): Promise<QueryAuctionsResponse>;
+  /** Queries a list of FinalizedAuctions items. */
+  FinalizedAuctions(request: QueryFinalizedAuctionsRequest): Promise<QueryFinalizedAuctionsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -242,6 +375,7 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
     this.Auctions = this.Auctions.bind(this);
+    this.FinalizedAuctions = this.FinalizedAuctions.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -253,6 +387,12 @@ export class QueryClientImpl implements Query {
     const data = QueryAuctionsRequest.encode(request).finish();
     const promise = this.rpc.request("auction.auction.Query", "Auctions", data);
     return promise.then((data) => QueryAuctionsResponse.decode(new _m0.Reader(data)));
+  }
+
+  FinalizedAuctions(request: QueryFinalizedAuctionsRequest): Promise<QueryFinalizedAuctionsResponse> {
+    const data = QueryFinalizedAuctionsRequest.encode(request).finish();
+    const promise = this.rpc.request("auction.auction.Query", "FinalizedAuctions", data);
+    return promise.then((data) => QueryFinalizedAuctionsResponse.decode(new _m0.Reader(data)));
   }
 }
 
