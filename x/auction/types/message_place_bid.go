@@ -9,7 +9,7 @@ const TypeMsgPlaceBid = "place_bid"
 
 var _ sdk.Msg = &MsgPlaceBid{}
 
-func NewMsgPlaceBid(creator string, auctionId uint64, bidPrice uint64) *MsgPlaceBid {
+func NewMsgPlaceBid(creator string, auctionId uint64, bidPrice string) *MsgPlaceBid {
 	return &MsgPlaceBid{
 		Creator:   creator,
 		AuctionId: auctionId,

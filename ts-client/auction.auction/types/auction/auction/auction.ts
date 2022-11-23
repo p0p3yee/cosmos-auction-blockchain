@@ -8,14 +8,26 @@ export interface Auction {
   creator: string;
   id: number;
   name: string;
-  startPrice: number;
+  startPrice: string;
   duration: number;
   createdAt: number;
+  currentHighestBidId: number;
+  highestBidExists: boolean;
   ended: boolean;
 }
 
 function createBaseAuction(): Auction {
-  return { creator: "", id: 0, name: "", startPrice: 0, duration: 0, createdAt: 0, ended: false };
+  return {
+    creator: "",
+    id: 0,
+    name: "",
+    startPrice: "",
+    duration: 0,
+    createdAt: 0,
+    currentHighestBidId: 0,
+    highestBidExists: false,
+    ended: false,
+  };
 }
 
 export const Auction = {
@@ -29,8 +41,8 @@ export const Auction = {
     if (message.name !== "") {
       writer.uint32(26).string(message.name);
     }
-    if (message.startPrice !== 0) {
-      writer.uint32(32).uint64(message.startPrice);
+    if (message.startPrice !== "") {
+      writer.uint32(34).string(message.startPrice);
     }
     if (message.duration !== 0) {
       writer.uint32(40).uint64(message.duration);
@@ -38,8 +50,14 @@ export const Auction = {
     if (message.createdAt !== 0) {
       writer.uint32(48).int64(message.createdAt);
     }
+    if (message.currentHighestBidId !== 0) {
+      writer.uint32(56).uint64(message.currentHighestBidId);
+    }
+    if (message.highestBidExists === true) {
+      writer.uint32(64).bool(message.highestBidExists);
+    }
     if (message.ended === true) {
-      writer.uint32(56).bool(message.ended);
+      writer.uint32(72).bool(message.ended);
     }
     return writer;
   },
@@ -61,7 +79,7 @@ export const Auction = {
           message.name = reader.string();
           break;
         case 4:
-          message.startPrice = longToNumber(reader.uint64() as Long);
+          message.startPrice = reader.string();
           break;
         case 5:
           message.duration = longToNumber(reader.uint64() as Long);
@@ -70,6 +88,12 @@ export const Auction = {
           message.createdAt = longToNumber(reader.int64() as Long);
           break;
         case 7:
+          message.currentHighestBidId = longToNumber(reader.uint64() as Long);
+          break;
+        case 8:
+          message.highestBidExists = reader.bool();
+          break;
+        case 9:
           message.ended = reader.bool();
           break;
         default:
@@ -85,9 +109,11 @@ export const Auction = {
       creator: isSet(object.creator) ? String(object.creator) : "",
       id: isSet(object.id) ? Number(object.id) : 0,
       name: isSet(object.name) ? String(object.name) : "",
-      startPrice: isSet(object.startPrice) ? Number(object.startPrice) : 0,
+      startPrice: isSet(object.startPrice) ? String(object.startPrice) : "",
       duration: isSet(object.duration) ? Number(object.duration) : 0,
       createdAt: isSet(object.createdAt) ? Number(object.createdAt) : 0,
+      currentHighestBidId: isSet(object.currentHighestBidId) ? Number(object.currentHighestBidId) : 0,
+      highestBidExists: isSet(object.highestBidExists) ? Boolean(object.highestBidExists) : false,
       ended: isSet(object.ended) ? Boolean(object.ended) : false,
     };
   },
@@ -97,9 +123,11 @@ export const Auction = {
     message.creator !== undefined && (obj.creator = message.creator);
     message.id !== undefined && (obj.id = Math.round(message.id));
     message.name !== undefined && (obj.name = message.name);
-    message.startPrice !== undefined && (obj.startPrice = Math.round(message.startPrice));
+    message.startPrice !== undefined && (obj.startPrice = message.startPrice);
     message.duration !== undefined && (obj.duration = Math.round(message.duration));
     message.createdAt !== undefined && (obj.createdAt = Math.round(message.createdAt));
+    message.currentHighestBidId !== undefined && (obj.currentHighestBidId = Math.round(message.currentHighestBidId));
+    message.highestBidExists !== undefined && (obj.highestBidExists = message.highestBidExists);
     message.ended !== undefined && (obj.ended = message.ended);
     return obj;
   },
@@ -109,9 +137,11 @@ export const Auction = {
     message.creator = object.creator ?? "";
     message.id = object.id ?? 0;
     message.name = object.name ?? "";
-    message.startPrice = object.startPrice ?? 0;
+    message.startPrice = object.startPrice ?? "";
     message.duration = object.duration ?? 0;
     message.createdAt = object.createdAt ?? 0;
+    message.currentHighestBidId = object.currentHighestBidId ?? 0;
+    message.highestBidExists = object.highestBidExists ?? false;
     message.ended = object.ended ?? false;
     return message;
   },

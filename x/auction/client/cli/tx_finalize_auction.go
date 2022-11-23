@@ -15,15 +15,11 @@ var _ = strconv.Itoa(0)
 
 func CmdFinalizeAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "finalize-auction [auction-id] [bid-id]",
+		Use:   "finalize-auction [auction-id]",
 		Short: "Broadcast message finalizeAuction",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argAuctionId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
-			argBidId, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
@@ -36,7 +32,6 @@ func CmdFinalizeAuction() *cobra.Command {
 			msg := types.NewMsgFinalizeAuction(
 				clientCtx.GetFromAddress().String(),
 				argAuctionId,
-				argBidId,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

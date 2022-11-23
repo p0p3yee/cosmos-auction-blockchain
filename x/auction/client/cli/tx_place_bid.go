@@ -23,10 +23,7 @@ func CmdPlaceBid() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argBidPrice, err := cast.ToUint64E(args[1])
-			if err != nil {
-				return err
-			}
+			argBidPrice := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

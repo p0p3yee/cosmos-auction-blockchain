@@ -15,8 +15,6 @@ export interface AuctionAuction {
   /** @format uint64 */
   id?: string;
   name?: string;
-
-  /** @format uint64 */
   startPrice?: string;
 
   /** @format uint64 */
@@ -24,6 +22,10 @@ export interface AuctionAuction {
 
   /** @format int64 */
   createdAt?: string;
+
+  /** @format uint64 */
+  currentHighestBidId?: string;
+  highestBidExists?: boolean;
   ended?: boolean;
 }
 
@@ -35,8 +37,6 @@ export interface AuctionMsgCreateAuctionResponse {
 export interface AuctionMsgFinalizeAuctionResponse {
   /** @format uint64 */
   id?: string;
-
-  /** @format uint64 */
   finalPrice?: string;
 }
 

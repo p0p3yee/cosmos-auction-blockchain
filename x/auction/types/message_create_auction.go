@@ -9,7 +9,7 @@ const TypeMsgCreateAuction = "create_auction"
 
 var _ sdk.Msg = &MsgCreateAuction{}
 
-func NewMsgCreateAuction(creator string, name string, startPrice uint64, duration uint64) *MsgCreateAuction {
+func NewMsgCreateAuction(creator string, name string, startPrice string, duration uint64) *MsgCreateAuction {
 	return &MsgCreateAuction{
 		Creator:    creator,
 		Name:       name,

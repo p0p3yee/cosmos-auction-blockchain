@@ -23,6 +23,29 @@ func (k Keeper) GetAuction(ctx sdk.Context, id uint64) (val types.Auction, found
 	return val, true
 }
 
+func (k Keeper) UpdateAuctionHighestBidId(ctx sdk.Context, id uint64, bidId uint64) error {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, id)
+
+	b := store.Get(bz)
+	if b == nil {
+		return types.AuctionNotFound
+	}
+
+	var auction types.Auction
+	k.cdc.MustUnmarshal(b, &auction)
+
+	auction.HighestBidExists = true
+	auction.CurrentHighestBidId = bidId
+
+	appendedValue := k.cdc.MustMarshal(&auction)
+
+	store.Set(bz, appendedValue)
+	return nil
+}
+
 func (k Keeper) EndAuction(ctx sdk.Context, id uint64) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
 

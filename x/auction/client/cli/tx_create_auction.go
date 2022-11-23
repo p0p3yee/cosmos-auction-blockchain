@@ -15,15 +15,12 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-auction [name] [start-price] [min-price-step]",
+		Use:   "create-auction [name] [start-price] [duration]",
 		Short: "Broadcast message createAuction",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
-			argStartPrice, err := cast.ToUint64E(args[1])
-			if err != nil {
-				return err
-			}
+			argStartPrice := args[1]
 			argMinPriceStep, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err

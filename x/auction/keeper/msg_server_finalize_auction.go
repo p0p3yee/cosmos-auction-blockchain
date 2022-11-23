@@ -23,22 +23,43 @@ func (k msgServer) FinalizeAuction(goCtx context.Context, msg *types.MsgFinalize
 		return nil, types.NotAuctionOwner
 	}
 
-	bid, found := k.GetBid(ctx, msg.BidId)
-	if !found {
-		return nil, types.BidNotFound
+	if uint64(auction.CreatedAt)+auction.Duration > uint64(ctx.BlockHeight()) {
+		return nil, types.AuctionFinalizeTooEarly
+	}
+
+	finalBidPrice := "0"
+	bidCreator := ""
+	if auction.HighestBidExists {
+		bid, found := k.GetBid(ctx, auction.CurrentHighestBidId)
+		if found {
+			finalBidPrice = bid.BidPrice
+			bidCreator = bid.Creator
+		}
 	}
 
 	finalize := types.FinalizeAuction{
 		Creator:    msg.Creator,
 		AuctionId:  msg.AuctionId,
-		BidId:      msg.BidId,
-		FinalPrice: bid.BidPrice,
+		BidId:      auction.CurrentHighestBidId,
+		FinalPrice: finalBidPrice,
+		Winner:     bidCreator,
 	}
 
 	if id, finalPrice, err := k.AppendFinalizeAuction(ctx, finalize); err != nil {
 		return nil, err
 	} else {
 		if err = k.EndAuction(ctx, msg.AuctionId); err != nil {
+			return nil, err
+		}
+
+		finalPriceCoin, err := sdk.ParseCoinsNormalized(finalize.FinalPrice)
+		if err != nil {
+			return nil, err
+		}
+
+		receiver, err := sdk.AccAddressFromBech32(msg.Creator)
+
+		if err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiver, finalPriceCoin); err != nil {
 			return nil, err
 		}
 

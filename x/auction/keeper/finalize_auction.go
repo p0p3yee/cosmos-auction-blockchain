@@ -33,7 +33,7 @@ func (k Keeper) SetFinalizeAuctionCount(ctx sdk.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-func (k Keeper) AppendFinalizeAuction(ctx sdk.Context, finalizeAuction types.FinalizeAuction) (uint64, uint64, error) {
+func (k Keeper) AppendFinalizeAuction(ctx sdk.Context, finalizeAuction types.FinalizeAuction) (uint64, string, error) {
 
 	count := k.GetFinalizeAuctionCount(ctx)
 

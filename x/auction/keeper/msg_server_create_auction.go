@@ -10,7 +10,14 @@ import (
 func (k msgServer) CreateAuction(goCtx context.Context, msg *types.MsgCreateAuction) (*types.MsgCreateAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if msg.StartPrice <= 0 {
+	startPriceCoins, err := sdk.ParseCoinsNormalized(msg.StartPrice)
+	if err != nil {
+		return nil, err
+	}
+
+	zero := sdk.Coins{sdk.NewInt64Coin("token", 0)}
+
+	if startPriceCoins.IsAllLTE(zero) {
 		return nil, types.AuctionPriceInvalid
 	}
 

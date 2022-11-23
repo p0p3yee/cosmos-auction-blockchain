@@ -9,11 +9,12 @@ export interface FinalizeAuction {
   id: number;
   auctionId: number;
   bidId: number;
-  finalPrice: number;
+  finalPrice: string;
+  winner: string;
 }
 
 function createBaseFinalizeAuction(): FinalizeAuction {
-  return { creator: "", id: 0, auctionId: 0, bidId: 0, finalPrice: 0 };
+  return { creator: "", id: 0, auctionId: 0, bidId: 0, finalPrice: "", winner: "" };
 }
 
 export const FinalizeAuction = {
@@ -30,8 +31,11 @@ export const FinalizeAuction = {
     if (message.bidId !== 0) {
       writer.uint32(32).uint64(message.bidId);
     }
-    if (message.finalPrice !== 0) {
-      writer.uint32(40).uint64(message.finalPrice);
+    if (message.finalPrice !== "") {
+      writer.uint32(42).string(message.finalPrice);
+    }
+    if (message.winner !== "") {
+      writer.uint32(50).string(message.winner);
     }
     return writer;
   },
@@ -56,7 +60,10 @@ export const FinalizeAuction = {
           message.bidId = longToNumber(reader.uint64() as Long);
           break;
         case 5:
-          message.finalPrice = longToNumber(reader.uint64() as Long);
+          message.finalPrice = reader.string();
+          break;
+        case 6:
+          message.winner = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -72,7 +79,8 @@ export const FinalizeAuction = {
       id: isSet(object.id) ? Number(object.id) : 0,
       auctionId: isSet(object.auctionId) ? Number(object.auctionId) : 0,
       bidId: isSet(object.bidId) ? Number(object.bidId) : 0,
-      finalPrice: isSet(object.finalPrice) ? Number(object.finalPrice) : 0,
+      finalPrice: isSet(object.finalPrice) ? String(object.finalPrice) : "",
+      winner: isSet(object.winner) ? String(object.winner) : "",
     };
   },
 
@@ -82,7 +90,8 @@ export const FinalizeAuction = {
     message.id !== undefined && (obj.id = Math.round(message.id));
     message.auctionId !== undefined && (obj.auctionId = Math.round(message.auctionId));
     message.bidId !== undefined && (obj.bidId = Math.round(message.bidId));
-    message.finalPrice !== undefined && (obj.finalPrice = Math.round(message.finalPrice));
+    message.finalPrice !== undefined && (obj.finalPrice = message.finalPrice);
+    message.winner !== undefined && (obj.winner = message.winner);
     return obj;
   },
 
@@ -92,7 +101,8 @@ export const FinalizeAuction = {
     message.id = object.id ?? 0;
     message.auctionId = object.auctionId ?? 0;
     message.bidId = object.bidId ?? 0;
-    message.finalPrice = object.finalPrice ?? 0;
+    message.finalPrice = object.finalPrice ?? "";
+    message.winner = object.winner ?? "";
     return message;
   },
 };

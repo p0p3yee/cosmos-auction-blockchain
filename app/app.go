@@ -179,6 +179,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		auctionmoduletypes.ModuleName:  {authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -507,6 +508,7 @@ func New(
 		keys[auctionmoduletypes.StoreKey],
 		keys[auctionmoduletypes.MemStoreKey],
 		app.GetSubspace(auctionmoduletypes.ModuleName),
+		app.BankKeeper,
 	)
 	auctionModule := auctionmodule.NewAppModule(appCodec, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -747,6 +749,7 @@ func (app *App) LoadHeight(height int64) error {
 func (app *App) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
+		println(authtypes.NewModuleAddress(acc).String())
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
 	}
 

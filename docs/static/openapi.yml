@@ -28,13 +28,17 @@ paths:
                       type: string
                     startPrice:
                       type: string
-                      format: uint64
                     duration:
                       type: string
                       format: uint64
                     createdAt:
                       type: string
                       format: int64
+                    currentHighestBidId:
+                      type: string
+                      format: uint64
+                    highestBidExists:
+                      type: boolean
                     ended:
                       type: boolean
               pagination:
@@ -44869,13 +44873,17 @@ definitions:
         type: string
       startPrice:
         type: string
-        format: uint64
       duration:
         type: string
         format: uint64
       createdAt:
         type: string
         format: int64
+      currentHighestBidId:
+        type: string
+        format: uint64
+      highestBidExists:
+        type: boolean
       ended:
         type: boolean
   auction.auction.MsgCreateAuctionResponse:
@@ -44892,7 +44900,6 @@ definitions:
         format: uint64
       finalPrice:
         type: string
-        format: uint64
   auction.auction.MsgPlaceBidResponse:
     type: object
     properties:
@@ -44919,13 +44926,17 @@ definitions:
               type: string
             startPrice:
               type: string
-              format: uint64
             duration:
               type: string
               format: uint64
             createdAt:
               type: string
               format: int64
+            currentHighestBidId:
+              type: string
+              format: uint64
+            highestBidExists:
+              type: boolean
             ended:
               type: boolean
       pagination:
