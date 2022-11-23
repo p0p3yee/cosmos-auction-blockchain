@@ -30,6 +30,10 @@ auctiond tx auction create-auction "exampleAuction" 100token 100 --from alice
 
 Can only be called by the creator of the auction
 
+Can only be called when the auction is done (current block height >= auction create at + auction duration)
+
+It will transfer the token from the highest bid to the creator of the auction
+
 ```
 auctiond tx auction finalize-auction auction_id --from account_name
 
@@ -43,7 +47,9 @@ Can only place bid that larger than the previous highest bid
 
 You need sufficient balance in your account to place the bid
 
-token will send to module until someone bid price is higher than you
+Token will send to module until someone bid price is higher than you
+
+Can only place bid to an auction between the creation time ~ end time
 
 ```
 auctiond tx auction place-bid auction_id bidPrice --from account_name
